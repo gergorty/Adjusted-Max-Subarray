@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
-#include <string>
+#include <iomanip>
 
 using namespace std;
 
@@ -16,27 +16,20 @@ int max(int a, int b, int c) { return max(max(a, b), c); }
 
 // Find the maximum possible sum in arr[] auch that arr[m]
 // is part of it
-int maxCrossingSum(int arr[], int l, int m, int h, int &z, int &r)
+int maxCrossingSum(int arr[], int l, int m, int h, int& z, int& r)
 {
-
-	//tt.push_back(m);
 	// Include elements on left of mid.
 	int sum = 0;
-	//int z = 0;
 	int left_sum = INT_MIN;
 	for (int i = m; i >= l; i--) {
 		sum = sum + arr[i];
 		if (sum > left_sum) {
 			
 			left_sum = sum;
-			z = i;
-			//cout << "left sum: " << left_sum << endl;
-			
+			z = i;	
 		}
 	}
 
-	// Include elements on right of mid
-	//int r = 0;
 	r = m;
 	sum = 0;
 	int right_sum = INT_MIN;
@@ -47,14 +40,14 @@ int maxCrossingSum(int arr[], int l, int m, int h, int &z, int &r)
 		{
 			right_sum = sum;
 			r = m + (i-m);
-			//cout << "right sum: " << right_sum << endl;
-		
 		}
 	}
 
-
-	cout << m - l << "   " << left_sum << "            " <<
-		r <<"  " << right_sum << "       " << right_sum+left_sum << endl;
+	cout << setw(10) << left <<"index L: " << setw(5) << left << m - l 
+		<< setw(10) << left << " left sum:  " << setw(5) << left << left_sum 
+		<< setw(10) << left <<"   index R:  " << setw(5) << left <<r 
+		<< setw(10) << left << " Right sum: " << setw(5) << left << right_sum 
+		<< setw(10) << left << "   Totals:    " << setw(5) << left << right_sum + left_sum << endl;
 	// Return sum of elements on left and right of mid
 	// returning only left_sum + right_sum will fail for
 	// [-2, 1]
@@ -69,11 +62,8 @@ int maxSubArraySum(int arr[], int l, int h, int &z, int &r)
 	if (l == h)
 		return arr[l];
 
-	// Find middle point
 	int m = (l + h) / 2;
 
-
-	//x.push_bac
 	return max(maxSubArraySum(arr, l, m, z, r),
 		maxSubArraySum(arr, m + 1, h, z, r),
 		maxCrossingSum(arr, l, m, h, z, r));
@@ -83,15 +73,11 @@ int maxSubArraySum(int arr[], int l, int h, int &z, int &r)
 int main()
 {
 	int arr[] = { 13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7};
-	int z = 0; 
+	int z = 0;
 	int r = 0;
-	/*vector<int> memoize;
-	vector<int> tt;
-	vector<char> yyy;*/
+
 	int n = sizeof(arr) / sizeof(arr[0]);
 	int max_sum = maxSubArraySum(arr, 0, n - 1, z, r);
-	//int z = sizeof(memoize) / sizeof(memoize[0]);
-	cout << "---z"<< z <<"----r" <<r << endl;
 	printf("Maximum contiguous sum is %d\n", max_sum);
 	getchar();
 
