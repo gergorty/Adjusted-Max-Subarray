@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
-#include <iomanip>
 
 using namespace std;
 
@@ -16,12 +15,14 @@ int max(int a, int b, int c) { return max(max(a, b), c); }
 
 // Find the maximum possible sum in arr[] auch that arr[m]
 // is part of it
-int maxCrossingSum(int arr[], int l, int m, int h, int& z, int& r)
+int maxCrossingSum(int arr[], int l, int m, int h, int& z, int& r,int &counter, vector<int> &lVec,
+	vector<int> &rVec, vector<int> &sumVec)
 {
 	// Include elements on left of mid.
 	int sum = 0;
 	int left_sum = INT_MIN;
 	for (int i = m; i >= l; i--) {
+		counter++;
 		sum = sum + arr[i];
 		if (sum > left_sum) {
 			
@@ -35,7 +36,7 @@ int maxCrossingSum(int arr[], int l, int m, int h, int& z, int& r)
 	int right_sum = INT_MIN;
 	for (int i = m + 1; i <= h; i++) {
 		sum = sum + arr[i];
-	
+		counter++;
 		if (sum > right_sum) 
 		{
 			right_sum = sum;
@@ -43,20 +44,17 @@ int maxCrossingSum(int arr[], int l, int m, int h, int& z, int& r)
 		}
 	}
 
-	cout << setw(10) << left <<"index L: " << setw(5) << left << m - l 
-		<< setw(10) << left << " left sum:  " << setw(5) << left << left_sum 
-		<< setw(10) << left <<"   index R:  " << setw(5) << left <<r 
-		<< setw(10) << left << " Right sum: " << setw(5) << left << right_sum 
-		<< setw(10) << left << "   Totals:    " << setw(5) << left << right_sum + left_sum << endl;
-	// Return sum of elements on left and right of mid
-	// returning only left_sum + right_sum will fail for
-	// [-2, 1]
+	lVec.push_back(z);
+	rVec.push_back(r);
+	sumVec.push_back(right_sum + left_sum);
+
 	return max(left_sum + right_sum, left_sum, right_sum); //this gives the next function the "slice of the array
 	//to parse"
 }
 
 // Returns sum of maximum sum subarray in aa[l..h]
-int maxSubArraySum(int arr[], int l, int h, int &z, int &r)
+int maxSubArraySum(int arr[], int l, int h, int &z, int &r, int& counter, vector<int>& lVec,
+	vector<int>& rVec, vector<int>& sumVec)
 {
 	// Base Case: Only one element
 	if (l == h)
@@ -64,20 +62,31 @@ int maxSubArraySum(int arr[], int l, int h, int &z, int &r)
 
 	int m = (l + h) / 2;
 
-	return max(maxSubArraySum(arr, l, m, z, r),
-		maxSubArraySum(arr, m + 1, h, z, r),
-		maxCrossingSum(arr, l, m, h, z, r));
+	return max(maxSubArraySum(arr, l, m, z, r,counter, lVec,rVec,sumVec),
+		maxSubArraySum(arr, m + 1, h, z, r, counter, lVec, rVec, sumVec),
+		maxCrossingSum(arr, l, m, h, z, r, counter, lVec, rVec, sumVec));
 }
 
 /*Driver program to test maxSubArraySum*/
 int main()
 {
+	vector<int> lVec, rVec, sumVec;
+	int counter = 0;
 	int arr[] = { 13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7};
 	int z = 0;
 	int r = 0;
 
 	int n = sizeof(arr) / sizeof(arr[0]);
-	int max_sum = maxSubArraySum(arr, 0, n - 1, z, r);
+	int max_sum = maxSubArraySum(arr, 0, n - 1, z, r,counter,lVec,rVec,sumVec);
+
+	for (int i = 0; i < rVec.size(); i++)
+	{
+		if (sumVec[i] == max_sum)
+		{
+			cout << "L index: " << lVec[i] << " R index: " << rVec[i] << " counter: " << counter << endl;
+		}
+	}
+
 	printf("Maximum contiguous sum is %d\n", max_sum);
 	getchar();
 
